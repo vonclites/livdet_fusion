@@ -6,7 +6,6 @@ import tensorflow as tf
 import inputs
 from iris import models
 from iris.models import fusion
-from iris.datasets import configs
 import checkmate
 import tftools.tools as tft
 
@@ -214,10 +213,5 @@ def _run(params):
 
 
 def run(params):
-    configs.write_experiment_params(
-        params=params,
-        fp=os.path.join(params['model_dir'], 'params.json')
-    )
-
     with tf.Graph().as_default():
         _run(params)
