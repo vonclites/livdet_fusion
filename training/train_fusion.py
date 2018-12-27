@@ -4,8 +4,8 @@ import numpy as np
 import tensorflow as tf
 
 import inputs
-from iris import models
-from iris.models import fusion
+import models
+from models import fusion
 import checkmate
 import tftools.tools as tft
 
