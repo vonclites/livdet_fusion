@@ -2,9 +2,8 @@ import os
 import tensorflow as tf
 
 import inputs
-from iris import models
-from iris.models import mono_feature
-from iris.datasets import configs
+import models
+from models import mono_feature
 from tftools import tools as tft
 import checkmate
 
@@ -155,10 +154,6 @@ def _clone_fn(data_provider,
 
 
 def run(params):
-    configs.write_experiment_params(
-        params=params,
-        fp=os.path.join(params['model_dir'], 'params.json')
-    )
     with tf.Graph().as_default():
         _run(params)
 
@@ -193,35 +188,30 @@ if __name__ == '__main__':
         }
     }
 
-    DATASET_CONFIGS = configs.read_all_dataset_configs('/home/dom/iris/tfrecords')
-
-    trial_sets = {
-        # 'iiitd_cogent_0': DATASET_CONFIGS['iiitd_cogent']['iiitd_cogent_0'],
-        # 'iiitd_vista_0': DATASET_CONFIGS['iiitd_vista']['iiitd_vista_0'],
-        'clarkson2013_0': DATASET_CONFIGS['clarkson2013']['clarkson2013_0']
+    DATASET_PARAMS = {
+        'train_live': 'path/to/tfrecord_of_live_samples',
+        'train_spoof': 'path/to/tfrecord_of_spoof_samples',
+        'test': 'path/to/tfrecord_of_test_samples',
+        'scaler_file': 'path/to/numpy_scalers_file'
     }
 
-    BASE_DIR = os.path.join('/mnt/data1/iris_experiments', EXPERIMENT_NAME)
+    MODEL_DIR = 'path/to/save/models'
 
-    for dataset_params in trial_sets.values():
-        MODEL_DIR = os.path.join(BASE_DIR, dataset_params['dataset'])
-        # MODEL_DIR = os.path.join(MODEL_DIR, dataset_params['subset'])
+    PARAMS = {
+        'model_dir': MODEL_DIR,
+        'learning_rate': 0.01,
+        'num_gpus': 3,
+        'batch_size': 60,
+        'dataset_params': DATASET_PARAMS,
+        'network_params': VGG_PARAMS,
+        'tfrecord_key': VGG_PARAMS['tfrecord_key'],
+        'label': 'label',
+        'keep_last_n_checkpoints': 5,
+        'keep_best_n_checkpoints': 3,
+        'max_train_steps': 2000,
+        'summary_interval': 50,
+        'checkpoint_interval': 50,
+        'evaluation_interval': 50
+    }
 
-        PARAMS = {
-            'model_dir': MODEL_DIR,
-            'learning_rate': 0.01,
-            'num_gpus': 3,
-            'batch_size': 60,
-            'dataset_params': dataset_params,
-            'network_params': VGG_PARAMS,
-            'tfrecord_key': VGG_PARAMS['tfrecord_key'],
-            'label': 'label',
-            'keep_last_n_checkpoints': 5,
-            'keep_best_n_checkpoints': 3,
-            'max_train_steps': 2000,
-            'summary_interval': 50,
-            'checkpoint_interval': 50,
-            'evaluation_interval': 50
-        }
-
-        run(PARAMS)
+    run(PARAMS)
